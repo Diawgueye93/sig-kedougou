@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIG Kédougou - Accueil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .description {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+            border-radius: 5px;
+        }
+        
+        .description h2 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        
+        .description ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        
+        .description li {
+            margin: 8px 0;
+            color: #555;
+        }
+        
+        .description li:before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .feature-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .feature-box i {
+            font-size: 2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .feature-box p {
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 2px solid #95a5a6;
+        }
+        
+        .btn-secondary:hover {
+            background: #d5dbde;
+            border-color: #7f8c8d;
+        }
+        
+        .info-box {
+            background: #e8f4f8;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #2c3e50;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            color: #95a5a6;
+            font-size: 0.85em;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ SIG Kédougou</h1>
+            <p>Cartographie web de la région de Kédougou</p>
+        </div>
+        
+        <div class="description">
+            <h2>Bienvenue !</h2>
+            <ul>
+                <li>Explorez les données cartographiques de Kédougou</li>
+                <li>Visualisez les limites administratives</li>
+                <li>Consultez les réseaux routier et hydrographique</li>
+                <li>Identifiez les localités et infrastructures</li>
+                <li>Effectuez des requêtes avancées</li>
+                <li>Téléchargez les données</li>
+            </ul>
+        </div>
+        
+        <div class="features">
+            <div class="feature-box">
+                <p>🎯</p>
+                <p>Requêtes spatiales</p>
+            </div>
+            <div class="feature-box">
+                <p>🔍</p>
+                <p>Requêtes attributaires</p>
+            </div>
+            <div class="feature-box">
+                <p>📏</p>
+                <p>Mesure de distances</p>
+            </div>
+            <div class="feature-box">
+                <p>⬇️</p>
+                <p>Téléchargement données</p>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <a href="index.html" class="btn btn-primary">Ouvrir l'application →</a>
+            <a href="GUIDE_UTILISATEUR.md" class="btn btn-secondary">📖 Guide utilisateur</a>
+        </div>
+        
+        <div class="info-box">
+            <strong>ℹ️ Conseil :</strong> Pour une meilleure expérience, utilisez un navigateur récent (Chrome, Firefox, Safari ou Edge) et une connexion Internet stable.
+        </div>
+        
+        <div class="footer">
+            <p>SIG Kédougou v2.0 - Modernisé le 13 février 2026</p>
+            <p>Basé sur QGIS2Web et Leaflet.js</p>
+        </div>
+    </div>
+</body>
+</html>

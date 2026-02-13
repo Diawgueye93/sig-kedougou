@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet.photon.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <link rel="stylesheet" href="css/modern-app-style.css">
+        <title>Cartographie web de la région de Kédougou</title>
+    </head>
+    <body>
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <div class="navbar-brand">
+                    <i class="fas fa-map"></i>
+                    <span>SIG Kédougou</span>
+                </div>
+                <div class="navbar-menu">
+                    <a href="#" class="navbar-item" data-action="home" title="Accueil">
+                        <i class="fas fa-home"></i>
+                        <span>Accueil</span>
+                    </a>
+                    <a href="#" class="navbar-item" data-action="about" title="À propos">
+                        <i class="fas fa-info-circle"></i>
+                        <span>À propos</span>
+                    </a>
+                    <a href="#" class="navbar-item" data-action="catalog" title="Catalogue des données">
+                        <i class="fas fa-database"></i>
+                        <span>Catalogue</span>
+                    </a>
+                    <a href="#" class="navbar-item" data-action="spatial-query" title="Requête spatiale">
+                        <i class="fas fa-draw-polygon"></i>
+                        <span>Requête spatiale</span>
+                    </a>
+                    <a href="#" class="navbar-item" data-action="attribute-query" title="Requête attributaire">
+                        <i class="fas fa-filter"></i>
+                        <span>Requête attributaire</span>
+                    </a>
+                    <a href="#" class="navbar-item" data-action="download" title="Télécharger les données">
+                        <i class="fas fa-download"></i>
+                        <span>Téléchargement</span>
+                    </a>
+                    <a href="#" class="navbar-item" data-action="measure" title="Outils de mesure">
+                        <i class="fas fa-ruler"></i>
+                        <span>Mesure</span>
+                    </a>
+                    <a href="#" class="navbar-item" data-action="zoom-extent" title="Zoom à l'étendue maximale">
+                        <i class="fas fa-expand"></i>
+                        <span>Zoom</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Container -->
+        <div class="app-container">
+            <!-- Left Panel - Layer Control -->
+            <div class="left-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-layers"></i> Couches</h3>
+                    <button class="panel-toggle" id="left-panel-toggle" title="Masquer le panneau">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+                <div class="panel-content" id="layers-container">
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container">
+                <!-- Search Bar -->
+                <div class="map-search-container">
+                    <input type="text" id="navbar-search-input" class="map-search-bar" placeholder="Chercher un lieu, une localité, une école..." />
+                    <i class="fas fa-search"></i>
+                </div>
+                <div id="map"></div>
+                <!-- Coordinates Bar -->
+                <div class="coordinates-bar">
+                    <span class="coord-label">Latitude:</span>
+                    <span class="coord-value" id="lat">0.00°</span>
+                    <span class="coord-label">Longitude:</span>
+                    <span class="coord-value" id="lon">0.00°</span>
+                    <span class="coord-label">Zoom:</span>
+                    <span class="coord-value" id="zoom-level">1</span>
+                </div>
+                <!-- Mini Map -->
+                <div id="minimap"></div>
+            </div>
+
+            <!-- Right Panel - Basemaps and Legend -->
+            <div class="right-panel">
+                <div class="panel-tabs">
+                    <button class="panel-tab-btn active" data-tab="basemaps">
+                        <i class="fas fa-globe"></i> Fonds de carte
+                    </button>
+                    <button class="panel-tab-btn" data-tab="legend">
+                        <i class="fas fa-book"></i> Légende
+                    </button>
+                </div>
+                
+                <div class="panel-tab-content active" id="basemaps-tab">
+                    <div class="panel-header">
+                        <h3>Fonds de carte</h3>
+                        <button class="panel-toggle" id="right-panel-toggle" title="Masquer le panneau">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="basemaps-container" id="basemaps-list">
+                    </div>
+                </div>
+
+                <div class="panel-tab-content" id="legend-tab">
+                    <div class="panel-header">
+                        <h3>Légende</h3>
+                        <button class="panel-toggle" id="right-panel-toggle" title="Masquer le panneau">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="legend-container" id="legend-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <!-- Home Modal -->
+        <div class="modal" id="homeModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Cartographie web de la région de Kédougou</h2>
+                    <button class="modal-close" data-modal="homeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Bienvenue sur le SIG de Kédougou</strong></p>
+                    <p>Explorez les données cartographiques de la région avec des outils intuitifs :</p>
+                    <ul>
+                        <li>Consultez les limites administratives</li>
+                        <li>Visualisez le réseau routier et hydrographique</li>
+                        <li>Identifiez les localités et infrastructures</li>
+                        <li>Effectuez des requêtes spatiales et attributaires</li>
+                        <li>Mesurez des distances et des surfaces</li>
+                        <li>Téléchargez les données en GeoJSON</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Conseils d'utilisation :</strong></p>
+                    <ul>
+                        <li>Utilisez les contrôles à gauche pour gérer les couches visibles</li>
+                        <li>Changez les fonds de carte à droite</li>
+                        <li>Explorez la légende pour comprendre les symboles</li>
+                        <li>Cliquez sur les entités pour voir leurs propriétés</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-close" data-modal="homeModal">Fermer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Catalog Modal -->
+        <div class="modal" id="catalogModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Catalogue des données</h2>
+                    <button class="modal-close" data-modal="catalogModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Découvrez les couches de données disponibles dans cette application :</p>
+                    <div id="catalog-list" style="margin-top: 15px;">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-close" data-modal="catalogModal">Fermer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Modal -->
+        <div class="modal" id="aboutModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>À propos de cette application</h2>
+                    <button class="modal-close" data-modal="aboutModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Cartographie web de la région de Kédougou</strong></p>
+                    <p>Projet de cartographie web portant sur :</p>
+                    <ul>
+                        <li>Les limites administratives</li>
+                        <li>Le réseau routier</li>
+                        <li>Le réseau hydrographique</li>
+                        <li>Les localités du milieu rural</li>
+                        <li>Les écoles</li>
+                    </ul>
+                    <p><strong>Technologies utilisées :</strong></p>
+                    <ul>
+                        <li>QGIS</li>
+                        <li>Leaflet.js</li>
+                        <li>OpenStreetMap</li>
+                        <li>Google Maps Satellite</li>
+                        <li>CartoDB</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-close" data-modal="aboutModal">Fermer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Modal -->
+        <div class="modal" id="downloadModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Télécharger les données</h2>
+                    <button class="modal-close" data-modal="downloadModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Sélectionnez les couches à télécharger :</p>
+                    <div class="download-options" id="download-options">
+                        <label><input type="checkbox" value="Regions_Senegal" /> Régions du Sénégal</label>
+                        <label><input type="checkbox" value="Region_Kedougou" /> Région de Kédougou</label>
+                        <label><input type="checkbox" value="Kedougou_Departements" /> Départements</label>
+                        <label><input type="checkbox" value="Kedougou_Arrondissements" /> Arrondissements</label>
+                        <label><input type="checkbox" value="Kedougou_Ecoles" /> Écoles</label>
+                        <label><input type="checkbox" value="Kedougou_Hydrographie" /> Hydrographie</label>
+                        <label><input type="checkbox" value="Kedougou_Routes" /> Routes</label>
+                        <label><input type="checkbox" value="Kedougou_Localites" /> Localités</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="download-btn-geojson">Télécharger en GeoJSON</button>
+                    <button class="btn-primary" id="download-btn-csv" style="background: #27ae60;">Télécharger en CSV</button>
+                    <button class="btn-close" data-modal="downloadModal">Annuler</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spatial Query Modal -->
+        <div class="modal" id="spatialQueryModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Requête spatiale</h2>
+                    <button class="modal-close" data-modal="spatialQueryModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Sélectionnez un type de requête spatiale :</p>
+                    <div class="query-options">
+                        <button class="query-btn" data-query="buffer" title="Buffer">
+                            <i class="fas fa-circle-notch"></i> Zone tampon
+                        </button>
+                        <button class="query-btn" data-query="intersection" title="Intersection">
+                            <i class="fas fa-project-diagram"></i> Intersection
+                        </button>
+                        <button class="query-btn" data-query="contains" title="Contient">
+                            <i class="fas fa-expand"></i> Contient
+                        </button>
+                        <button class="query-btn" data-query="distance" title="Distance">
+                            <i class="fas fa-ruler-horizontal"></i> Distance
+                        </button>
+                    </div>
+                    <div id="query-details" style="margin-top: 20px; display:none;">
+                        <label>Distance (m) : </label>
+                        <input type="number" id="buffer-distance" value="100" min="0" max="10000" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="apply-query">Appliquer</button>
+                    <button class="btn-close" data-modal="spatialQueryModal">Fermer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attribute Query Modal -->
+        <div class="modal" id="attributeQueryModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Requête attributaire</h2>
+                    <button class="modal-close" data-modal="attributeQueryModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Entrez vos critères de recherche :</p>
+                    <div class="filter-options">
+                        <label>Couche :</label>
+                        <select id="layer-select">
+                            <option value="">-- Sélectionner une couche --</option>
+                            <option value="Kedougou_Departements">Départements</option>
+                            <option value="Kedougou_Arrondissements">Arrondissements</option>
+                            <option value="Kedougou_Ecoles">Écoles</option>
+                            <option value="Kedougou_Localites">Localités</option>
+                        </select>
+                        
+                        <label>Attribut :</label>
+                        <select id="attribute-select">
+                            <option value="">-- Sélectionner un attribut --</option>
+                        </select>
+                        
+                        <label>Valeur :</label>
+                        <input type="text" id="attribute-value" placeholder="Entrez la valeur à rechercher" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="apply-filter">Rechercher</button>
+                    <button class="btn-close" data-modal="attributeQueryModal">Fermer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay for modal backdrop -->
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet.photon.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/Regions_Senegal_3.js"></script>
+        <script src="data/Region_Kedougou_4.js"></script>
+        <script src="data/Kedougou_Departements_5.js"></script>
+        <script src="data/Kedougou_Arrondissements_6.js"></script>
+        <script src="data/Kedougou_Ecoles_7.js"></script>
+        <script src="data/Kedougou_Hydrographie_8.js"></script>
+        <script src="data/Kedougou_Routes_9.js"></script>
+        <script src="data/Kedougou_Localites_10.js"></script>
+        <script src="js/modern-app-script.js"></script>
+        <script src="js/layer-definitions.js"></script>
+        <script src="js/advanced-features.js"></script>
+    </body>
+</html>
