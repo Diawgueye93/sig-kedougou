@@ -6,6 +6,20 @@
         <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="theme-color" content="#2c3e50">
+        <meta name="description" content="Application de cartographie web pour explorer les données géographiques de la région de Kédougou, Sénégal">
+        
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="manifest.json">
+        <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+        <link rel="apple-touch-icon" href="icons/icon.svg">
+        <meta name="apple-mobile-web-app-title" content="SIG Kédougou">
+        
+        <!-- Métadonnées PWA avancées -->
+        <meta name="keywords" content="cartographie, géographie, kédougou, sénégal, SIG, gis">
+        <meta name="author" content="SIG Kédougou">
+        
         <link rel="stylesheet" href="css/leaflet.css">
         <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
         <link rel="stylesheet" href="css/L.Control.Locate.min.css">
@@ -25,38 +39,42 @@
                     <span>SIG Kédougou</span>
                 </div>
                 <div class="navbar-menu">
-                    <a href="#" class="navbar-item" data-action="home" title="Accueil">
+                    <button class="navbar-item" data-action="home" title="Accueil">
                         <i class="fas fa-home"></i>
                         <span>Accueil</span>
-                    </a>
-                    <a href="#" class="navbar-item" data-action="about" title="À propos">
+                    </button>
+                    <button class="navbar-item" data-action="about" title="À propos">
                         <i class="fas fa-info-circle"></i>
                         <span>À propos</span>
-                    </a>
-                    <a href="#" class="navbar-item" data-action="catalog" title="Catalogue des données">
+                    </button>
+                    <button class="navbar-item" data-action="catalog" title="Catalogue des données">
                         <i class="fas fa-database"></i>
                         <span>Catalogue</span>
-                    </a>
-                    <a href="#" class="navbar-item" data-action="spatial-query" title="Requête spatiale">
+                    </button>
+                    <button class="navbar-item" data-action="spatial-query" title="Requête spatiale">
                         <i class="fas fa-draw-polygon"></i>
                         <span>Requête spatiale</span>
-                    </a>
-                    <a href="#" class="navbar-item" data-action="attribute-query" title="Requête attributaire">
+                    </button>
+                    <button class="navbar-item" data-action="attribute-query" title="Requête attributaire">
                         <i class="fas fa-filter"></i>
                         <span>Requête attributaire</span>
-                    </a>
-                    <a href="#" class="navbar-item" data-action="download" title="Télécharger les données">
+                    </button>
+                    <button class="navbar-item" data-action="download" title="Télécharger les données">
                         <i class="fas fa-download"></i>
                         <span>Téléchargement</span>
-                    </a>
-                    <a href="#" class="navbar-item" data-action="measure" title="Outils de mesure">
+                    </button>
+                    <button class="navbar-item" data-action="measure" title="Outils de mesure">
                         <i class="fas fa-ruler"></i>
                         <span>Mesure</span>
-                    </a>
-                    <a href="#" class="navbar-item" data-action="zoom-extent" title="Zoom à l'étendue maximale">
+                    </button>
+                    <button class="navbar-item" data-action="zoom-extent" title="Zoom à l'étendue maximale">
                         <i class="fas fa-expand"></i>
                         <span>Zoom</span>
-                    </a>
+                    </button>
+                    <button class="navbar-item" id="install-app-btn" title="Installer l'application" style="display: none;">
+                        <i class="fas fa-download"></i>
+                        <span>Installer</span>
+                    </button>
                 </div>
             </div>
         </nav>
@@ -288,7 +306,7 @@
                 <div class="modal-body">
                     <p>Entrez vos critères de recherche :</p>
                     <div class="filter-options">
-                        <label>Couche :</label>
+                        <label for="layer-select">Couche :</label>
                         <select id="layer-select">
                             <option value="">-- Sélectionner une couche --</option>
                             <option value="Kedougou_Departements">Départements</option>
@@ -297,12 +315,12 @@
                             <option value="Kedougou_Localites">Localités</option>
                         </select>
                         
-                        <label>Attribut :</label>
+                        <label for="attribute-select">Attribut :</label>
                         <select id="attribute-select">
                             <option value="">-- Sélectionner un attribut --</option>
                         </select>
                         
-                        <label>Valeur :</label>
+                        <label for="attribute-value">Valeur :</label>
                         <input type="text" id="attribute-value" placeholder="Entrez la valeur à rechercher" />
                     </div>
                 </div>
@@ -313,8 +331,55 @@
             </div>
         </div>
 
+        <!-- Install App Modal -->
+        <div class="modal" id="installAppModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Installer l'application</h2>
+                    <button class="modal-close" data-modal="installAppModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Installez SIG Kédougou sur votre appareil!</strong></p>
+                    <div style="text-align: center; padding: 20px; background: #f0f0f0; border-radius: 8px; margin: 15px 0;">
+                        <i class="fas fa-mobile-alt" style="font-size: 48px; color: #3498db; margin-bottom: 10px;"></i>
+                        <p>Accédez à votre cartographie personnelle directement depuis l'écran d'accueil de votre téléphone.</p>
+                    </div>
+                    <p><strong>Avantages :</strong></p>
+                    <ul>
+                        <li>✅ Installation directe sans AppStore</li>
+                        <li>✅ Fonctionnement hors ligne complètement</li>
+                        <li>✅ Géolocalisation précise</li>
+                        <li>✅ Accès rapide depuis l'écran d'accueil</li>
+                        <li>✅ Mises à jour automatiques</li>
+                    </ul>
+                    <p style="color: #7f8c8d; font-size: 12px; margin-top: 15px;">
+                        Cette application fonctionne sans connexion internet et sauvegarde vos données localement.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="confirm-install-btn" style="background: #27ae60;">Installer maintenant</button>
+                    <button class="btn-close" data-modal="installAppModal">Plus tard</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Overlay for modal backdrop -->
         <div class="modal-overlay" id="modalOverlay"></div>
+
+        <!-- Install Prompt Banner -->
+        <div id="install-prompt-banner" class="install-prompt-banner" style="display: none;">
+            <div class="install-prompt-content">
+                <div class="install-prompt-left">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Installer SIG Kédougou sur votre appareil</span>
+                </div>
+                <div class="install-prompt-right">
+                    <button id="install-prompt-btn" class="install-prompt-install">Installer</button>
+                    <button id="install-prompt-dismiss" class="install-prompt-dismiss">×</button>
+                </div>
+            </div>
+        </div>
+
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
         <script src="js/L.Control.Layers.Tree.min.js"></script>
@@ -327,6 +392,7 @@
         <script src="js/labels.js"></script>
         <script src="js/leaflet.photon.js"></script>
         <script src="js/leaflet-measure.js"></script>
+        <script src="js/pwa-installer.js"></script>
         <script src="data/Regions_Senegal_3.js"></script>
         <script src="data/Region_Kedougou_4.js"></script>
         <script src="data/Kedougou_Departements_5.js"></script>
@@ -338,5 +404,369 @@
         <script src="js/modern-app-script.js"></script>
         <script src="js/layer-definitions.js"></script>
         <script src="js/advanced-features.js"></script>
+        <script src="js/geolocation.js"></script>
+        
+        <!-- Service Worker Registration & PWA Install -->
+        <script>
+            /**
+             * PWA Installation System - SIG Kédougou
+             * Gère l'enregistrement du Service Worker et l'installation de l'app
+             */
+            
+            // Variables globales
+            let deferredPrompt = null;
+            let installPromptBanner = document.getElementById('install-prompt-banner');
+            let installAppBtn = document.getElementById('install-app-btn');
+            let installPromptBtn = document.getElementById('install-prompt-btn');
+            let dismissPromptBtn = document.getElementById('install-prompt-dismiss');
+
+            /**
+             * 1. ENREGISTREMENT DU SERVICE WORKER
+             */
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('sw.js', { scope: '/sig-kedougou/' })
+                        .then(registration => {
+                            console.log('✅ Service Worker enregistré avec succès:', registration);
+                            
+                            // Vérifier les mises à jour
+                            registration.addEventListener('updatefound', () => {
+                                const newWorker = registration.installing;
+                                newWorker.addEventListener('statechange', () => {
+                                    if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                                        console.log('📦 Nouvelle version disponible');
+                                        // Afficher une notification
+                                        if ('Notification' in window && Notification.permission === 'granted') {
+                                            new Notification('SIG Kédougou', {
+                                                body: 'Une nouvelle version est disponible. Rechargez la page.',
+                                                icon: 'icons/icon.svg'
+                                            });
+                                        } else {
+                                            // Afficher une bannière de mise à jour
+                                            const updateBanner = document.createElement('div');
+                                            updateBanner.style.cssText = 'position: fixed; top: 50px; width: calc(100% - 20px); background: #3498db; color: white; padding: 12px 10px; text-align: center; z-index: 9998; border-radius: 4px; margin: 10px;';
+                                            updateBanner.innerHTML = '📦 Une nouvelle version est disponible. <button onclick="window.location.reload();" style="background: white; color: #3498db; border: none; padding: 4px 12px; border-radius: 3px; cursor: pointer; margin-left: 10px;">Recharger</button>';
+                                            document.body.appendChild(updateBanner);
+                                        }
+                                    }
+                                });
+                            });
+                        })
+                        .catch(error => console.error('❌ Erreur lors de l\'enregistrement du Service Worker:', error));
+                });
+            }
+
+            /**
+             * 2. ÉVÉNEMENT beforeinstallprompt (Installation PWA)
+             */
+            window.addEventListener('beforeinstallprompt', (e) => {
+                // Empêcher l'affichage automatique de la bannière du navigateur
+                e.preventDefault();
+                
+                // Sauvegarder l'événement pour plus tard
+                deferredPrompt = e;
+                
+                console.log('💾 beforeinstallprompt capturé - app installable');
+                
+                // Afficher notre bannière d'installation personnalisée
+                showInstallPrompt();
+                
+                // Rendre visible le bouton d'installation dans la navbar
+                if (installAppBtn) {
+                    installAppBtn.style.display = 'flex';
+                }
+            });
+
+            /**
+             * 3. AFFICHAGE DE LA BANNIÈRE D'INSTALLATION
+             */
+            function showInstallPrompt() {
+                if (installPromptBanner) {
+                    installPromptBanner.style.display = 'block';
+                    console.log('📲 Bannière d\'installation affichée');
+                }
+            }
+
+            /**
+             * 4. GESTIONNAIRES D'ÉVÉNEMENTS D'INSTALLATION
+             */
+            
+            // Bouton d'installation dans la bannière
+            if (installPromptBtn) {
+                installPromptBtn.addEventListener('click', async () => {
+                    if (!deferredPrompt) {
+                        console.warn('❌ deferredPrompt non disponible');
+                        return;
+                    }
+                    
+                    // Afficher le dialogue d'installation
+                    deferredPrompt.prompt();
+                    
+                    // Attendre la réponse de l'utilisateur
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('✅ Utilisateur a accepté l\'installation');
+                        hideInstallPrompt();
+                        showInstallSuccessNotification();
+                    } else {
+                        console.log('❌ Utilisateur a refusé l\'installation');
+                    }
+                    
+                    deferredPrompt = null;
+                });
+            }
+
+            // Bouton de fermeture de la bannière
+            if (dismissPromptBtn) {
+                dismissPromptBtn.addEventListener('click', () => {
+                    hideInstallPrompt();
+                    console.log('✋ Bannière d\'installation fermée');
+                });
+            }
+
+            // Bouton d\'installation dans la navbar
+            if (installAppBtn) {
+                installAppBtn.addEventListener('click', async () => {
+                    if (!deferredPrompt) {
+                        console.warn('⚠️ L\'application est déjà installée ou son installation n\'est pas disponible');
+                        // Ouvrir le modal d'info
+                        openModal('installAppModal');
+                        return;
+                    }
+                    
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('✅ App installée via le bouton navbar');
+                        hideInstallPrompt();
+                        showInstallSuccessNotification();
+                        installAppBtn.style.display = 'none';
+                    }
+                    
+                    deferredPrompt = null;
+                });
+            }
+
+            /**
+             * 5. CACHER LA BANNIÈRE D'INSTALLATION
+             */
+            function hideInstallPrompt() {
+                if (installPromptBanner) {
+                    installPromptBanner.style.display = 'none';
+                }
+            }
+
+            /**
+             * 6. NOTIFICATION DE SUCCÈS D'INSTALLATION
+             */
+            function showInstallSuccessNotification() {
+                // Notification système
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('SIG Kédougou installée!', {
+                        body: 'L\'application est maintenant installée sur votre écran d\'accueil.',
+                        icon: 'icons/icon.svg',
+                        badge: 'icons/icon-192x192.png',
+                        tag: 'install-success',
+                        requireInteraction: false
+                    });
+                }
+                
+                // Message dans la console
+                console.log('🎉 L\'application a été installée avec succès!');
+            }
+
+            /**
+             * 7. DEMANDER LES PERMISSIONS
+             */
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    console.log('🔔 Permission Notification:', permission);
+                });
+            }
+
+            /**
+             * 8. GESTION DE L'ÉTÉ INSTALLED - quand l'app est déjà installée
+             */
+            window.addEventListener('appinstalled', () => {
+                console.log('🎉 PWA installée avec succès!');
+                hideInstallPrompt();
+                if (installAppBtn) {
+                    installAppBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            });
+
+            /**
+             * 9. GESTION DU MODE OFFLINE/ONLINE
+             */
+            document.addEventListener('offline', () => {
+                console.log('📴 Mode hors ligne activé');
+                const banner = document.createElement('div');
+                banner.id = 'offline-banner';
+                banner.style.cssText = 'position: fixed; top: 50px; width: calc(100% - 20px); background: #e74c3c; color: white; padding: 12px 10px; text-align: center; z-index: 9999; border-radius: 4px; margin: 10px; font-weight: 500;';
+                banner.textContent = '⚠️ Vous êtes hors ligne. Certaines fonctionnalités peuvent ne pas fonctionner.';
+                if (!document.getElementById('offline-banner')) {
+                    document.body.insertBefore(banner, document.body.firstChild);
+                }
+            });
+            
+            document.addEventListener('online', () => {
+                console.log('📡 Connexion rétablie');
+                const banner = document.getElementById('offline-banner');
+                if (banner) {
+                    banner.style.display = 'none';
+                    setTimeout(() => banner.remove(), 300);
+                }
+            });
+
+            /**
+             * 10. DÉTECTION DE LA PLATEFORME
+             */
+            function detectPlatform() {
+                const ua = navigator.userAgent;
+                if (/Android/.test(ua)) {
+                    console.log('📱 Plateforme: Android');
+                    return 'android';
+                } else if (/iPhone|iPad|iPod|Mac OS/.test(ua)) {
+                    console.log('📱 Plateforme: iOS');
+                    return 'ios';
+                } else if (/Windows|Linux/.test(ua)) {
+                    console.log('💻 Plateforme: Desktop');
+                    return 'desktop';
+                }
+                return 'unknown';
+            }
+
+            // Afficher les infos au chargement
+            window.addEventListener('load', () => {
+                console.log('🚀 SIG Kédougou chargée');
+                console.log('Platform:', detectPlatform());
+                console.log('PWA Support:', 'serviceWorker' in navigator ? '✅' : '❌');
+                console.log('Notifications:', 'Notification' in window ? '✅' : '❌');
+                console.log('Geolocation:', 'geolocation' in navigator ? '✅' : '❌');
+            });
+
+            /**
+             * 11. MODAL HELPER (si la fonction openModal n'existe pas)
+             */
+            function openModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = 'block';
+                    const overlay = document.getElementById('modalOverlay');
+                    if (overlay) overlay.style.display = 'block';
+                }
+            }
+        </script>
+
+        <!-- Styles pour la bannière d'installation -->
+        <style>
+            .install-prompt-banner {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+                color: white;
+                padding: 16px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 9997;
+                animation: slideUp 0.3s ease-out;
+            }
+
+            .install-prompt-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .install-prompt-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex: 1;
+                font-weight: 500;
+            }
+
+            .install-prompt-left i {
+                font-size: 24px;
+            }
+
+            .install-prompt-right {
+                display: flex;
+                gap: 8px;
+            }
+
+            .install-prompt-install {
+                background: white;
+                color: #3498db;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .install-prompt-install:hover {
+                transform: scale(1.05);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .install-prompt-dismiss {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: none;
+                font-size: 24px;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+            }
+
+            .install-prompt-dismiss:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @media (max-width: 600px) {
+                .install-prompt-banner {
+                    bottom: 10px;
+                    left: 10px;
+                    right: 10px;
+                    padding: 12px;
+                }
+
+                .install-prompt-content {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 12px;
+                }
+
+                .install-prompt-right {
+                    align-self: flex-end;
+                }
+            }
+        </style>
+
     </body>
 </html>

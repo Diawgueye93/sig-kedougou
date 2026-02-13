@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Générer les icônes PWA - SIG Kédougou</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 { color: #2c3e50; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        button { padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 10px 5px 10px 0; }
+        button:hover { background: #2980b9; }
+        #output { margin-top: 20px; padding: 15px; background: #ecf0f1; border-radius: 4px; }
+        .icon-preview { display: inline-block; margin: 10px; text-align: center; }
+        canvas { border: 1px solid #ddd; margin: 5px; }
+        .progress { margin: 10px 0; }
+        .success { color: #27ae60; }
+        .error { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ Générer les icônes PWA - SIG Kédougou</h1>
+        <p>Cet outil génère les icônes PNG pour votre application Progressive Web App (PWA).</p>
+        
+        <button onclick="generateAllIcons()">Générer toutes les icônes</button>
+        <button onclick="downloadZip()">Télécharger tout en ZIP</button>
+        <button onclick="clearOutput()">Effacer</button>
+        
+        <div id="output"></div>
+        <div id="preview" style="margin-top: 20px;"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const icons = {};
+
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, size, size);
+            
+            // Remplir le fond
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Fond dégradé bleu
+            const gradient = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+            gradient.addColorStop(0, '#3498db');
+            gradient.addColorStop(1, '#2980b9');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.35, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cercle de localisation externe (transparent)
+            ctx.fillStyle = 'rgba(52, 152, 219, 0.3)';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cercle interne rouge
+            ctx.fillStyle = '#e74c3c';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.15, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Point blanc au centre
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.08, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Pointer vers le bas
+            const pointerSize = size * 0.12;
+            const baseY = size/2 + size * 0.18;
+            ctx.fillStyle = '#c0392b';
+            ctx.beginPath();
+            ctx.moveTo(size/2, baseY + pointerSize);
+            ctx.lineTo(size/2 - pointerSize, baseY);
+            ctx.lineTo(size/2 + pointerSize, baseY);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Ombre
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.beginPath();
+            ctx.arc(size/2, size * 0.85, size * 0.15, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function canvasToBlob(canvas) {
+            return new Promise(resolve => {
+                canvas.toBlob(resolve, 'image/png');
+            });
+        }
+
+        async function generateAllIcons() {
+            const output = document.getElementById('output');
+            const preview = document.getElementById('preview');
+            output.innerHTML = '<div class="progress">Génération en cours...</div>';
+            preview.innerHTML = '';
+            icons = {};
+
+            try {
+                for (const size of sizes) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = size;
+                    canvas.height = size;
+                    drawIcon(canvas, size);
+                    
+                    const blob = await canvasToBlob(canvas);
+                    icons[`icon-${size}x${size}.png`] = blob;
+                    
+                    // Créer aussi des icônes maskables
+                    if (size === 192 || size === 512) {
+                        icons[`maskable-icon-${size}x${size}.png`] = blob;
+                    }
+                    
+                    // Ajouter à l'aperçu
+                    const preview_html = `
+                        <div class="icon-preview">
+                            <canvas width="${size}" height="${size}" style="border: 1px solid #ddd; width: 100px; height: 100px;"></canvas>
+                            <p>${size}x${size}</p>
+                        </div>
+                    `;
+                    preview.innerHTML += preview_html;
+                    
+                    // Redessiner l'aperçu
+                    const previewCanvas = preview.lastElementChild.querySelector('canvas');
+                    const previewSize = 100;
+                    const previewCtx = previewCanvas.getContext('2d');
+                    previewCtx.scale(previewSize/size, previewSize/size);
+                    drawIcon(previewCanvas, size);
+                    
+                    // Créer le lien de téléchargement
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `icon-${size}x${size}.png`;
+                }
+
+                // Générer les screenshots
+                const screenshotSizes = [
+                    { w: 540, h: 720, name: 'screenshot-1.png' },
+                    { w: 1280, h: 720, name: 'screenshot-2.png' }
+                ];
+
+                for (const shot of screenshotSizes) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = shot.w;
+                    canvas.height = shot.h;
+                    drawIcon(canvas, Math.min(shot.w, shot.h));
+                    const blob = await canvasToBlob(canvas);
+                    icons[shot.name] = blob;
+                }
+
+                output.innerHTML = `
+                    <div class="success">✓ Génération complété!</div>
+                    <p>${Object.keys(icons).length} fichiers générés</p>
+                `;
+                
+                // Ajouter les liens de téléchargement
+                let html = '<p><strong>Télécharger les fichiers:</strong></p>';
+                for (const [name, blob] of Object.entries(icons)) {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = name;
+                    html += `<div><a href="${link.href}" download="${name}">${name}</a></div>`;
+                }
+                output.innerHTML += html;
+
+            } catch (error) {
+                output.innerHTML = `<div class="error">✗ Erreur: ${error.message}</div>`;
+            }
+        }
+
+        async function downloadZip() {
+            if (Object.keys(icons).length === 0) {
+                alert('Veuillez d\'abord générer les icônes');
+                return;
+            }
+
+            const output = document.getElementById('output');
+            output.innerHTML = '<div class="progress">Création du ZIP...</div>';
+
+            try {
+                const zip = new JSZip();
+                
+                for (const [name, blob] of Object.entries(icons)) {
+                    zip.file(name, blob);
+                }
+
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(zipBlob);
+                link.download = 'sig-kedougou-icons.zip';
+                link.click();
+
+                output.innerHTML = '<div class="success">✓ ZIP téléchargé!</div>';
+            } catch (error) {
+                output.innerHTML = `<div class="error">✗ Erreur: ${error.message}</div>`;
+            }
+        }
+
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '';
+            document.getElementById('preview').innerHTML = '';
+            icons = {};
+        }
+
+        // Générer automatiquement au chargement
+        window.addEventListener('load', () => {
+            generateAllIcons();
+        });
+    </script>
+</body>
+</html>

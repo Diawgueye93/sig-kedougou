@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mode Hors Ligne - SIG Kédougou</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .offline-container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+        }
+        
+        .offline-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        
+        p {
+            color: #7f8c8d;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .status {
+            margin: 30px 0;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .status-text {
+            font-size: 14px;
+            color: #34495e;
+            margin: 0;
+        }
+        
+        .tips {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .tips h3 {
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .tips ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .tips li {
+            padding: 8px 0;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .tips li:last-child {
+            border-bottom: none;
+        }
+        
+        .tips li:before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .version {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">🔌</div>
+        <h1>Mode Hors Ligne</h1>
+        <p>Vous n'êtes pas connecté à Internet pour le moment.</p>
+        
+        <div class="status">
+            <p class="status-text" id="status-time">Dernier accès: --</p>
+            <p class="status-text" id="connection-status">En attente de connexion...</p>
+        </div>
+        
+        <div class="tips">
+            <h3>Que pouvez-vous faire?</h3>
+            <ul>
+                <li>Consulter la carte chargée en cache</li>
+                <li>Accéder à votre géolocalisation</li>
+                <li>Consulter vos lieux favoris</li>
+                <li>Voir votre historique de position</li>
+            </ul>
+        </div>
+        
+        <div class="tips">
+            <h3>Pour rétablir la connexion:</h3>
+            <ul>
+                <li>Activez le Wi-Fi ou les données mobiles</li>
+                <li>Vérifiez votre connectivité réseau</li>
+                <li>Essayez de vous reconnecter</li>
+            </ul>
+        </div>
+        
+        <button onclick="location.href='/sig-kedougou/index.html'">Recharger l'application</button>
+        
+        <div class="version">
+            SIG Kédougou v1.0 | PWA Mode Offline
+        </div>
+    </div>
+    
+    <script>
+        // Afficher l'heure du dernier accès
+        function updateTime() {
+            const now = new Date().toLocaleString('fr-FR');
+            document.getElementById('status-time').textContent = `Dernier accès: ${now}`;
+        }
+        
+        updateTime();
+        
+        // Vérifier la connexion
+        function checkConnection() {
+            const isOnline = navigator.onLine;
+            const status = document.getElementById('connection-status');
+            
+            if (isOnline) {
+                status.textContent = '✓ Connexion rétablie! Rechargez la page.';
+                status.style.color = '#27ae60';
+            } else {
+                status.textContent = '✗ En attente de connexion...';
+                status.style.color = '#e74c3c';
+            }
+        }
+        
+        checkConnection();
+        
+        // Vérifier la connexion toutes les 5 secondes
+        setInterval(checkConnection, 5000);
+        
+        // Écouter les changements de connectivité
+        window.addEventListener('online', () => {
+            checkConnection();
+            // Rediriger après 3 secondes
+            setTimeout(() => {
+                location.href = '/sig-kedougou/index.html';
+            }, 3000);
+        });
+        
+        window.addEventListener('offline', () => {
+            checkConnection();
+        });
+    </script>
+</body>
+</html>
